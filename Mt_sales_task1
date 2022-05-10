@@ -1,0 +1,8 @@
+#Find all sales for products presented in `products` table 
+
+SELECT products.id, products.color, sum(sales.amount)
+FROM `mentor-part1-sql.1.products_mv` as products
+LEFT JOIN  `mentor-part1-sql.1.sales_mv` as sales 
+ON products.id = sales.id and (products.color = sales.color or (products.color IS NULL AND sales.color IS NULL))
+GROUP BY products.id, products.color, sales.id, sales.color
+ORDER BY products.id
