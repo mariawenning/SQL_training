@@ -1,0 +1,98 @@
+---SELECT "Hello world!";
+.open empire.db
+.header on
+.mode column
+
+select "Products table";
+select * from products limit 10;
+
+select "Sales table";
+select * from sales limit 20;
+
+/* 
+Task 1: Find top-10 best-selling products and total amount sold for each
+
+Example output:
+product_id       total_amount
+----------       ------------
+3                200
+19               185
+1                176
+4                140
+*/
+
+select "Task 1";
+select product_id, sum(amount) as total_amount
+from sales
+group by product_id
+order by total_amount desc
+limit 10;
+
+/*
+Task 2: Find top-3 best-selling categories, total number of items sold and total number of transactions
+
+Example output:
+category  total_amount  total_transactions
+--------  ------------  ------------------
+shoes     3000          1001
+dresses   2600          985
+...
+*/
+
+select "Task 2"; 
+  select category_id, sum(amount) as total_amount, count(product_id) as total_transactions
+  from products
+  join sales 
+  on sales.product_id = products.id
+  group by category_id
+  order by total_amount desc
+  limit 3;
+
+
+/*
+Task 3: Find top-3 best-selling products for each of the categories
+
+Example output:
+category  product_id
+--------  ----------
+shoes     3      
+shoes     18
+shoes     5
+dresses   11
+...
+
+*/
+
+select "Task 3";
+  select category_id, product_id
+  from (
+    select category_id, product_id, sum(amount),
+    row_number() over (partition by category_id order by sum(amount) desc) as ranking
+    from sales
+    join products
+    on sales.product_id = products.id
+    group by product_id)
+  where ranking <= 3;
+
+
+/*
+Task 4: For each category, build the cumulative sum of sales
+
+Example output:
+category  date        cumulative_amount
+--------  ----------  -----------------
+shoes     2022-05-01  100
+shoes     2022-05-02  140
+shoes     2022-05-03  185
+shoes     2022-05-04  214
+...
+*/
+select "Task 4";
+select category_id, date, sum(amount) over (partition by category_id order by date rows unbounded preceding) as cumulative_amount
+from products
+join sales
+on sales.product_id = products.id
+limit 12;
+
+
+
