@@ -1,8 +1,0 @@
-#Please identify corrupted sales, i.e. records for products without references in the `product` table
-
-SELECT sales.id, sales.color
-FROM `mentor-part1-sql.1.sales_mv` as sales 
-LEFT JOIN `mentor-part1-sql.1.products_mv` as products
-ON products.id = sales.id and (products.color = sales.color or (products.color IS NULL AND sales.color IS NULL))
-WHERE products.id IS NULL
-ORDER BY sales.id
